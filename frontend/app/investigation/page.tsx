@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
 import { DashboardNavigation } from "@/components/dashboard-navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,6 +20,8 @@ import {
   MarkerType,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
+
+const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 const initialNodes = [
   { id: '1', position: { x: 250, y: 50 }, data: { label: 'APT29 (Threat Actor)' }, style: { background: '#111', color: '#ff4444', border: '1px solid #ff4444', borderRadius: '8px', padding: '10px' } },
@@ -42,27 +46,69 @@ export default function InvestigationConsole() {
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   
   const [streamingText, setStreamingText] = useState("");
-  const fullResponse = "Based on our GraphRAG analysis, APT29 has been observed utilizing Cobalt Strike payloads in conjunction with the Outlook elevation of privilege vulnerability (CVE-2023-23397). The attack chain traverses from their known C2 infrastructure to specific target IPs within the Healthcare Sector. \n\nEvidence suggests a coordinated campaign. Multi-hop reasoning confirms the link between the payload hash and the threat actor's known TTPs (Tactics, Techniques, and Procedures).";
+  const [metrics, setMetrics] = useState<any>(null);
+  
+  const saveInvestigation = useMutation(api.investigations.saveInvestigation);
 
   const onConnect = useCallback((params: any) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!query) return;
     
     setIsSearching(true);
     setStreamingText("");
+    setMetrics(null);
     
-    // Simulate streaming response
-    let i = 0;
-    const interval = setInterval(() => {
-      setStreamingText(fullResponse.substring(0, i));
-      i += 5;
-      if (i > fullResponse.length) {
-        clearInterval(interval);
-        setIsSearching(false);
+    try {
+      const response = await fetch(`${apiUrl}/query`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ query }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`IntelGraph API returned ${response.status}`);
       }
-    }, 50);
+      
+      const data = await response.json();
+      
+      // Map the response
+      const answer = data.graphrag?.answer || "No response received.";
+      const runMetrics = {
+        llm: data.llm_only?.metrics,
+        rag: data.basic_rag?.metrics,
+        graphrag: data.graphrag?.metrics
+      };
+      
+      setMetrics(runMetrics);
+      
+      // Simulate streaming the real answer for UX
+      let i = 0;
+      const interval = setInterval(() => {
+        setStreamingText(answer.substring(0, i));
+        i += 5;
+        if (i > answer.length) {
+          clearInterval(interval);
+          setIsSearching(false);
+          
+          // Save the completed investigation to Convex DB
+          saveInvestigation({
+            query: query,
+            llmResponse: data.llm_only?.answer,
+            graphragResponse: answer,
+            metrics: runMetrics
+          }).catch(err => console.error("Failed to save to Convex DB:", err));
+        }
+      }, 20);
+      
+    } catch (error) {
+      console.error("Error fetching from backend:", error);
+      setStreamingText(`Error connecting to the IntelGraph API. Please ensure the backend is running at ${apiUrl}.`);
+      setIsSearching(false);
+    }
   };
 
   return (
@@ -280,11 +326,17 @@ export default function InvestigationConsole() {
                   <div className="grid grid-cols-2 gap-3">
                     <div className="p-3 rounded-lg border border-border/50 bg-secondary/10">
                       <div className="text-xs text-muted-foreground mb-1">Tokens Used</div>
-                      <div className="text-xl font-mono text-foreground">842 <span className="text-xs text-green-400 ml-1">↓ 85%</span></div>
+                      <div className="text-xl font-mono text-foreground">
+                        {metrics ? metrics.graphrag.tokens_used : "842"} 
+                        <span className="text-xs text-green-400 ml-1">↓ {metrics ? Math.round((1 - metrics.graphrag.tokens_used / metrics.llm.tokens_used) * 100) : "85"}%</span>
+                      </div>
                     </div>
                     <div className="p-3 rounded-lg border border-border/50 bg-secondary/10">
                       <div className="text-xs text-muted-foreground mb-1">Latency</div>
-                      <div className="text-xl font-mono text-foreground">1.2s <span className="text-xs text-green-400 ml-1">↓ 60%</span></div>
+                      <div className="text-xl font-mono text-foreground">
+                        {metrics ? metrics.graphrag.latency_seconds.toFixed(2) : "1.2"}s 
+                        <span className="text-xs text-green-400 ml-1">↓ {metrics ? Math.round((1 - metrics.graphrag.latency_seconds / metrics.rag.latency_seconds) * 100) : "60"}%</span>
+                      </div>
                     </div>
                   </div>
                 </div>

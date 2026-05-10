@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
+import Link from "next/link";
 
 const navLinks = [
   { name: "Investigation", href: "#investigation" },
@@ -60,15 +61,19 @@ export function Navigation() {
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-3">
-            <Button variant="ghost" size="sm" className="text-muted-foreground pointer-events-none">
-              Sign in
-            </Button>
-            <Button
-              size="sm"
-              className="bg-foreground hover:bg-foreground/90 text-background"
-            >
-              Get Started
-            </Button>
+            <Link href="/signin">
+              <Button variant="ghost" size="sm" className="text-muted-foreground">
+                Sign in
+              </Button>
+            </Link>
+            <Link href="/signup">
+              <Button
+                size="sm"
+                className="bg-foreground hover:bg-foreground/90 text-background"
+              >
+                Get Started
+              </Button>
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -103,12 +108,16 @@ export function Navigation() {
               </a>
             ))}
             <div className="flex flex-col gap-2 pt-4 mt-2 border-t border-border/50">
-              <Button variant="ghost" className="justify-start text-muted-foreground pointer-events-none">
-                Sign in
-              </Button>
-              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
-                Get Started
-              </Button>
+              <Link href="/signin">
+                <Button variant="ghost" className="w-full justify-start text-muted-foreground">
+                  Sign in
+                </Button>
+              </Link>
+              <Link href="/signup">
+                <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
+                  Get Started
+                </Button>
+              </Link>
             </div>
           </div>
         </div>

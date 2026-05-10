@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import { Inter, JetBrains_Mono } from 'next/font/google'
 import { GeistPixelLine } from 'geist/font/pixel'
 import { Analytics } from '@vercel/analytics/next'
+import { ConvexClientProvider } from "@/components/ConvexClientProvider"
 import './globals.css'
 
 const inter = Inter({ 
@@ -46,8 +47,10 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className={`${inter.variable} ${jetbrainsMono.variable} ${GeistPixelLine.variable} font-sans antialiased`}>
-        {children}
-        <Analytics />
+        <ConvexClientProvider>
+          {children}
+          <Analytics />
+        </ConvexClientProvider>
       </body>
     </html>
   )

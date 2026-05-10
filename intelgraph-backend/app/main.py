@@ -2,7 +2,7 @@ import logging
 from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from app.api import routes
+from app.api.routes.query import router as query_router
 
 # Configure logging
 logging.basicConfig(
@@ -26,7 +26,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(routes.router)
+app.include_router(query_router)
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
