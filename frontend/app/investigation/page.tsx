@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
 import { DashboardNavigation } from "@/components/dashboard-navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,6 +20,8 @@ import {
   MarkerType,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
+
+const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 const initialNodes = [
   { id: '1', position: { x: 250, y: 50 }, data: { label: 'APT29 (Threat Actor)' }, style: { background: '#111', color: '#ff4444', border: '1px solid #ff4444', borderRadius: '8px', padding: '10px' } },
@@ -57,13 +61,17 @@ export default function InvestigationConsole() {
     setMetrics(null);
     
     try {
-      const response = await fetch("http://localhost:8000/query", {
+      const response = await fetch(`${apiUrl}/query`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ query }),
       });
+
+      if (!response.ok) {
+        throw new Error(`IntelGraph API returned ${response.status}`);
+      }
       
       const data = await response.json();
       
@@ -98,7 +106,7 @@ export default function InvestigationConsole() {
       
     } catch (error) {
       console.error("Error fetching from backend:", error);
-      setStreamingText("Error connecting to the IntelGraph API. Please ensure the backend is running at localhost:8000.");
+      setStreamingText(`Error connecting to the IntelGraph API. Please ensure the backend is running at ${apiUrl}.`);
       setIsSearching(false);
     }
   };

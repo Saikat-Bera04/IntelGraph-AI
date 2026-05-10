@@ -33,7 +33,7 @@ export default function SignUp() {
     try {
       // Passing name along with email and password
       await signIn("password", { name, email, password, flow: "signUp" });
-      router.push("/investigation");
+      router.push("/dashboard");
     } catch (err) {
       setError("Failed to create account. Email may already be in use.");
       console.error(err);

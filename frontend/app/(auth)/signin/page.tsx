@@ -24,7 +24,7 @@ export default function SignIn() {
 
     try {
       await signIn("password", { email, password, flow: "signIn" });
-      router.push("/investigation");
+      router.push("/dashboard");
     } catch (err) {
       setError("Failed to sign in. Please check your credentials.");
       console.error(err);
