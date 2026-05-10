@@ -28,15 +28,14 @@ uvicorn app.main:app --reload --port 8000
 
 ## ⚙️ 2. Environment Variables
 
-Navigate to `intelgraph-backend/.env` and update your keys.
+Backend values live in `intelgraph-backend/.env`.
 
 ```env
 # Get this from Google AI Studio
 GEMINI_API_KEY=your_actual_gemini_api_key_here
 
-# Qdrant Vector DB Settings (Default local docker ports)
-QDRANT_HOST=localhost
-QDRANT_PORT=6333
+# Qdrant Vector DB Settings
+QDRANT_URL=http://localhost:6333
 
 # TigerGraph Savanna / REST++ GraphRAG settings
 TIGERGRAPH_URL=https://your-tigergraph-host
@@ -45,9 +44,62 @@ GRAPH_NAME=intelgraph
 TIGERGRAPH_VERTEX_TYPES=ThreatActor,Vulnerability,Malware,IP,Sector
 ```
 
+Frontend values live in `frontend/.env.local`.
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:8000
+NEXT_PUBLIC_CONVEX_URL=your_convex_deployment_url
+NEXT_PUBLIC_CONVEX_SITE_URL=your_convex_site_url
+```
+
+`QDRANT_HOST` and `QDRANT_PORT` are still supported, but `QDRANT_URL` is the preferred single-value setting.
+
 ---
 
-## 📡 3. API Reference
+## 🧭 3. How To Use The Workflow
+
+1. Start Qdrant if you want live Basic RAG results:
+```bash
+docker run -p 6333:6333 qdrant/qdrant
+```
+
+2. Ingest the starter cybersecurity documents:
+```bash
+cd "/Applications/Development/IntelGraph AI/intelgraph-backend"
+source venv/bin/activate
+python scripts/ingest.py
+```
+
+3. Start the backend:
+```bash
+cd "/Applications/Development/IntelGraph AI/intelgraph-backend"
+source venv/bin/activate
+uvicorn app.main:app --reload --port 8000
+```
+
+4. Start the frontend:
+```bash
+cd "/Applications/Development/IntelGraph AI/frontend"
+npm run dev
+```
+
+5. Open `http://localhost:3000/investigation`, enter a threat-intel question, and click **Analyze**.
+
+The frontend posts the query to `NEXT_PUBLIC_API_URL/query`. The backend runs three pipelines:
+- `llm_only`: Gemini with no retrieval context.
+- `basic_rag`: Gemini plus Qdrant vector context from `cyber_intel`.
+- `graphrag`: Gemini plus TigerGraph vertex samples, with a demo fallback if TigerGraph is unavailable.
+
+The Investigation Console then streams the GraphRAG answer, shows the attack graph, compares pipeline metrics, and saves the completed investigation to Convex when configured.
+
+Useful test queries:
+- `Which threat actors are linked to Cobalt Strike in healthcare attacks?`
+- `Explain the attack chain involving CVE-2023-23397.`
+- `What evidence connects APT29 to healthcare targeting?`
+
+---
+
+## 📡 4. API Reference
 
 The FastAPI backend exposes the following endpoints (You can test them interactively at `http://localhost:8000/docs`):
 
@@ -64,7 +116,7 @@ The FastAPI backend exposes the following endpoints (You can test them interacti
 
 ---
 
-## 🛠️ 4. Tasks You Need to Do (Hackathon Checklist)
+## 🛠️ 5. Tasks You Need to Do (Hackathon Checklist)
 
 To make the simulated components fully live and functional, you must complete these external setup tasks:
 
@@ -90,9 +142,10 @@ This is your killer feature. You need to configure TigerGraph manually:
 3. Configure the GraphRAG connector inside the `intelgraph-backend/graphrag` folder (which we cloned earlier) with your Savanna credentials.
 
 ### Task 4: Connect the Frontend to the Backend
-Currently, the Investigation Console (`frontend/app/investigation/page.tsx`) uses a simulated response timer. You need to:
-1. Add a `fetch('http://localhost:8000/query', { method: 'POST', body: JSON.stringify({ query }) })` call inside the `handleSearch` function.
-2. Map the backend's real `BenchmarkResponse` metrics to the React state to update the UI charts dynamically!
+The Investigation Console (`frontend/app/investigation/page.tsx`) is already wired to `NEXT_PUBLIC_API_URL/query`. If the UI cannot connect, confirm:
+1. `frontend/.env.local` has `NEXT_PUBLIC_API_URL=http://localhost:8000`.
+2. The backend is running on port `8000`.
+3. `http://localhost:8000/docs` loads in the browser.
 
 ---
 *Good luck with the hackathon!* 🚀

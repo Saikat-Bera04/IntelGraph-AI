@@ -34,14 +34,14 @@ export function DashboardNavigation() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="relative w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-accent/20" />
-              <span className="font-mono text-primary font-bold text-sm relative z-10">
-                IG
-              </span>
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-primary/10" />
+            <div className="relative w-8 h-8 rounded-lg flex items-center justify-center overflow-hidden">
+              <img 
+                src="/logo.png" 
+                alt="IntelGraph Logo" 
+                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+              />
             </div>
-            <span className="text-lg font-bold tracking-tight">IntelGraph</span>
+            <span className="text-lg font-bold tracking-tight text-foreground">IntelGraph</span>
           </Link>
 
           {/* Desktop Navigation */}

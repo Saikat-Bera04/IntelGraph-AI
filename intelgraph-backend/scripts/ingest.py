@@ -17,13 +17,21 @@ except Exception as e:
     # Fallback to a smaller model for hackathon if large fails
     model = SentenceTransformer("all-MiniLM-L6-v2")
 
-qdrant_host = os.getenv("QDRANT_HOST", "localhost")
-qdrant_port = int(os.getenv("QDRANT_PORT", 6333))
+def get_qdrant_client():
+    qdrant_url = os.getenv("QDRANT_URL", "").strip()
+    if qdrant_url:
+        return QdrantClient(url=qdrant_url), qdrant_url
+
+    qdrant_host = os.getenv("QDRANT_HOST", "localhost")
+    qdrant_port = int(os.getenv("QDRANT_PORT", 6333))
+    return QdrantClient(host=qdrant_host, port=qdrant_port), f"{qdrant_host}:{qdrant_port}"
+
+qdrant_target = os.getenv("QDRANT_URL", "").strip() or "localhost:6333"
 
 try:
-    client = QdrantClient(host=qdrant_host, port=qdrant_port)
+    client, qdrant_target = get_qdrant_client()
 except Exception as e:
-    print(f"Failed to connect to Qdrant at {qdrant_host}:{qdrant_port}: {e}")
+    print(f"Failed to connect to Qdrant at {qdrant_target}: {e}")
     print("Please make sure Qdrant is running via Docker.")
     exit(1)
 

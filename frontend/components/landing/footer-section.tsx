@@ -39,15 +39,15 @@ export function FooterSection() {
             {/* Brand Column */}
             <div className="col-span-2">
               {/* Logo */}
-              <a href="#" className="flex items-center gap-2 mb-6">
-                <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center">
-                  <Terminal className="w-4 h-4 text-primary" />
+              <a href="#" className="flex items-center gap-3 mb-6 group">
+                <div className="w-8 h-8 rounded-lg overflow-hidden">
+                  <img src="/logo.png" alt="IntelGraph" className="w-full h-full object-cover" />
                 </div>
-                <span className="font-semibold text-lg tracking-tight">nexus</span>
+                <span className="font-semibold text-lg tracking-tight text-foreground">IntelGraph</span>
               </a>
 
               <p className="text-sm text-muted-foreground leading-relaxed mb-6">
-                The complete platform to build, deploy, and scale AI-powered applications.
+                Advanced GraphRAG-powered cybersecurity intelligence platform for deep threat analysis.
               </p>
 
               {/* Social Links */}
@@ -93,7 +93,7 @@ export function FooterSection() {
         {/* Bottom Bar */}
         <div className="py-6 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-sm text-muted-foreground">
-            2025 Nexus. All rights reserved.
+            2026 IntelGraph AI. All rights reserved.
           </p>
 
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
