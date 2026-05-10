@@ -63,6 +63,9 @@ pip install fastapi uvicorn python-dotenv google-generativeai qdrant-client http
 # 4. Configure Environment
 # Open intelgraph-backend/.env and add:
 # GEMINI_API_KEY=your_key
+# QDRANT_URL=http://localhost:6333
+# TIGERGRAPH_URL=your_restpp_url
+# TIGERGRAPH_API_KEY=your_key
 
 # 5. Start the API Server
 uvicorn app.main:app --reload --port 8000
@@ -84,13 +87,45 @@ The platform will be available at `http://localhost:3000` and the API docs at `h
 
 ---
 
+## How To Use
+
+1. Start Qdrant when testing Basic RAG:
+```bash
+docker run -p 6333:6333 qdrant/qdrant
+```
+
+2. Populate the starter vector collection:
+```bash
+cd intelgraph-backend
+source venv/bin/activate
+python scripts/ingest.py
+```
+
+3. Run the backend and frontend in separate terminals:
+```bash
+cd intelgraph-backend
+source venv/bin/activate
+uvicorn app.main:app --reload --port 8000
+```
+
+```bash
+cd frontend
+npm run dev
+```
+
+4. Open `http://localhost:3000/investigation`, submit a threat-intel question, and review the AI synthesis, evidence chain, attack graph, and pipeline metrics.
+
+The UI calls `POST /query`, which runs LLM-only, Basic RAG, and GraphRAG pipelines together. TigerGraph is used when `TIGERGRAPH_URL`, `TIGERGRAPH_API_KEY`, `GRAPH_NAME`, and `TIGERGRAPH_VERTEX_TYPES` are configured; otherwise, the backend falls back to a demo graph path so the workflow stays usable.
+
+---
+
 ## 🛠️ Hackathon Next Steps
 
 To make the platform fully functional for the live demo:
 1. **Start Qdrant**: Run `docker run -p 6333:6333 qdrant/qdrant`.
 2. **Ingest Vector Data**: Run `python intelgraph-backend/scripts/ingest.py`.
 3. **Setup TigerGraph**: Create a TigerGraph Savanna cluster, configure your schema, and link the GraphRAG connector.
-4. **Connect Frontend**: Wire the frontend `fetch` in the Investigation Console to consume the live `http://localhost:8000/query` endpoint.
+4. **Verify Frontend Connection**: Make sure `frontend/.env.local` has `NEXT_PUBLIC_API_URL=http://localhost:8000` and the backend docs load at `http://localhost:8000/docs`.
 
 ---
 

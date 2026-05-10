@@ -252,6 +252,30 @@ CVE-2023-23397 -AFFECTS_SECTOR-> Healthcare
 
 The backend currently fetches sample vertices for each type listed in `TIGERGRAPH_VERTEX_TYPES`. If TigerGraph is not configured, not reachable, or returns no vertices, the backend falls back to a demo graph path so the dashboard keeps working.
 
+## How To Use In The App
+
+1. Confirm `intelgraph-backend/.env` contains your TigerGraph values:
+```env
+TIGERGRAPH_URL=https://your-restpp-host
+TIGERGRAPH_API_KEY=your_tigergraph_api_key
+GRAPH_NAME=intelgraph
+TIGERGRAPH_VERTEX_TYPES=ThreatActor,Vulnerability,Malware,IP,Sector
+```
+
+2. Restart the backend after changing TigerGraph env values.
+
+3. Open the Investigation Console at `http://localhost:3000/investigation` and ask a graph-shaped question, for example:
+```text
+Explain the attack chain involving APT29, Cobalt Strike, and CVE-2023-23397.
+```
+
+4. Check the **AI Synthesis** and **Metrics** tabs. The GraphRAG pipeline calls TigerGraph through:
+```text
+{TIGERGRAPH_URL}/restpp/graph/{GRAPH_NAME}/vertices/{VertexType}
+```
+
+If TigerGraph is unavailable, the response still works with the demo fallback path. To confirm live TigerGraph data is being used, call `POST /graphrag-query` from `http://localhost:8000/docs` and verify the generated answer reflects your seeded vertex attributes.
+
 After the graph is populated, restart the FastAPI backend:
 
 ```bash

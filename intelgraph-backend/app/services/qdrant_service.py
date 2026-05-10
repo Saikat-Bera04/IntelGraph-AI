@@ -1,14 +1,30 @@
 import os
+from urllib.parse import urlparse
 from qdrant_client import QdrantClient
 from sentence_transformers import SentenceTransformer
 from dotenv import load_dotenv
 
 load_dotenv()
 
+def get_qdrant_config():
+    qdrant_url = os.getenv("QDRANT_URL", "").strip()
+    if qdrant_url:
+        parsed = urlparse(qdrant_url if "://" in qdrant_url else f"http://{qdrant_url}")
+        return {
+            "url": qdrant_url,
+            "host": parsed.hostname or "localhost",
+            "port": parsed.port or 6333,
+        }
+
+    return {
+        "url": "",
+        "host": os.getenv("QDRANT_HOST", "localhost"),
+        "port": int(os.getenv("QDRANT_PORT", 6333)),
+    }
+
 class QdrantService:
     def __init__(self):
-        self.host = os.getenv("QDRANT_HOST", "localhost")
-        self.port = int(os.getenv("QDRANT_PORT", 6333))
+        self.config = get_qdrant_config()
         self.collection_name = "cyber_intel"
         self.client = None
         self.model = None
@@ -16,7 +32,13 @@ class QdrantService:
     def _init_client(self):
         if not self.client:
             try:
-                self.client = QdrantClient(host=self.host, port=self.port)
+                if self.config["url"]:
+                    self.client = QdrantClient(url=self.config["url"])
+                else:
+                    self.client = QdrantClient(
+                        host=self.config["host"],
+                        port=self.config["port"],
+                    )
             except Exception as e:
                 print(f"Warning: Qdrant client failed to connect: {e}")
 

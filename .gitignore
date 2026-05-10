@@ -1,21 +1,39 @@
+# ============================================================================
 # Node & Frontend (Next.js)
+# ============================================================================
 frontend/node_modules/
 frontend/.next/
 frontend/out/
 frontend/build/
+frontend/dist/
+frontend/.turbo/
+frontend/.swc/
+frontend/.env
 frontend/.env.local
 frontend/.env.development.local
 frontend/.env.test.local
 frontend/.env.production.local
+frontend/.env.*.local
 npm-debug.log*
+npm-error.log*
 yarn-debug.log*
 yarn-error.log*
+yarn-access-log*
+lerna-debug.log*
 .pnp.*
+.pnp.cjs
+.eslintcache
+*.tsbuildinfo
 
+# ============================================================================
 # Python & Backend (FastAPI)
+# ============================================================================
 intelgraph-backend/venv/
 intelgraph-backend/env/
+intelgraph-backend/ENV/
 intelgraph-backend/.env
+intelgraph-backend/.env.local
+intelgraph-backend/.env.*.local
 __pycache__/
 *.py[cod]
 *$py.class
@@ -39,18 +57,113 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.tox/
+.hypothesis/
+site/
 
-# TigerGraph GraphRAG Repo
+# ============================================================================
+# TigerGraph GraphRAG & Related
+# ============================================================================
 intelgraph-backend/graphrag/
+intelgraph-backend/graphrag-output/
+intelgraph-backend/rag-cache/
 
-# IDE & OS Files
+# ============================================================================
+# IDE & Editor Files
+# ============================================================================
 .vscode/
+.vscode-server/
 .idea/
-.DS_Store
+*.iml
+*.iws
+*.ipr
+.sublime-project
+.sublime-workspace
 *.swp
 *.swo
+*~
+.vim/
+.emacs.d/
 
+# ============================================================================
+# OS & System Files
+# ============================================================================
+.DS_Store
+.DS_Store?
+._*
+.AppleDouble
+.LSOverride
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.Spotlight-V100
+.Trashes
+
+# ============================================================================
 # Project Specific
+# ============================================================================
 artifacts/
 knowledge/
 brain/
+logs/
+*.log
+temp/
+tmp/
+.cache/
+cache/
+
+# ============================================================================
+# Development & Testing
+# ============================================================================
+.env
+.env.*
+!.env.example
+!.env.sample
+.env.test
+.env.development
+.env.production
+*.pem
+*.key
+*.crt
+
+# ============================================================================
+# Docker
+# ============================================================================
+.dockerignore
+
+# ============================================================================
+# Database & Data
+# ============================================================================
+*.db
+*.sqlite
+*.sqlite3
+.data/
+data/
+
+# ============================================================================
+# Environment & Secrets
+# ============================================================================
+.aws/
+.kube/
+secrets/
+credentials/
+
+# ============================================================================
+# Generated Files
+# ============================================================================
+_generated/
+.generated/
+.auto/
+
+# ============================================================================
+# Package Manager Lock Files (optional - uncomment if you want to ignore)
+# ============================================================================
+# pnpm-lock.yaml
+# package-lock.json
+# yarn.lock
