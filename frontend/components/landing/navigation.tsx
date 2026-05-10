@@ -36,14 +36,14 @@ export function Navigation() {
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <a href="#" className="flex items-center gap-3 group">
-            <div className="relative w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-accent/20" />
-              <span className="font-mono text-primary font-bold text-lg relative z-10">
-                N
-              </span>
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-primary/10" />
+            <div className="relative w-10 h-10 rounded-xl flex items-center justify-center overflow-hidden">
+              <img 
+                src="/logo.png" 
+                alt="IntelGraph Logo" 
+                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+              />
             </div>
-            <span className="text-xl font-bold tracking-tight">IntelGraph</span>
+            <span className="text-xl font-bold tracking-tight text-foreground">IntelGraph</span>
           </a>
 
           {/* Desktop Navigation */}

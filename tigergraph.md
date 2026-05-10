@@ -7,7 +7,7 @@ This project uses TigerGraph as the graph store for the GraphRAG pipeline. The b
 Set these values in `intelgraph-backend/.env`:
 
 ```env
-TIGERGRAPH_URL=https://your-tigergraph-host
+TIGERGRAPH_URL=https://tgcloud.io
 TIGERGRAPH_API_KEY=your_tigergraph_api_key
 GRAPH_NAME=intelgraph
 TIGERGRAPH_VERTEX_TYPES=ThreatActor,Vulnerability,Malware,IP,Sector
