@@ -3,6 +3,7 @@ from app.models.schemas import QueryRequest, PipelineResponse, BenchmarkResponse
 from app.services.gemini_service import gemini_service
 from app.services.qdrant_service import qdrant_service
 from app.services.evaluation_service import evaluation_service
+from app.services.tigergraph_service import tigergraph_service
 
 router = APIRouter()
 
@@ -21,7 +22,7 @@ async def rag_query(request: QueryRequest):
 
 @router.post("/graphrag-query", response_model=PipelineResponse)
 async def graphrag_query(request: QueryRequest):
-    context = "Graph Path: APT29-[USES]->Cobalt Strike-[EXPLOITS]->CVE-2023-23397-[TARGETS]->Healthcare"
+    context = await tigergraph_service.retrieve_context(request.query)
     result = await gemini_service.generate_response(request.query, context)
     result["metrics"]["accuracy_score"] = 98.5
     
