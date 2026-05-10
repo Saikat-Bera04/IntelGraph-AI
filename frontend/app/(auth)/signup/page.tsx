@@ -6,13 +6,15 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Network, ShieldCheck } from "lucide-react";
+import { Network, ShieldCheck, User, Lock } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function SignUp() {
   const { signIn } = useAuthActions();
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -22,8 +24,15 @@ export default function SignUp() {
     setIsLoading(true);
     setError("");
 
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      setIsLoading(false);
+      return;
+    }
+
     try {
-      await signIn("password", { email, password, flow: "signUp" });
+      // Passing name along with email and password
+      await signIn("password", { name, email, password, flow: "signUp" });
       router.push("/investigation");
     } catch (err) {
       setError("Failed to create account. Email may already be in use.");
@@ -59,7 +68,23 @@ export default function SignUp() {
 
           <form onSubmit={handleSignUp} className="space-y-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium text-foreground">Email Address</label>
+              <label className="text-sm font-medium text-foreground flex items-center gap-2">
+                <User className="w-4 h-4 text-primary/70" /> Full Name
+              </label>
+              <Input 
+                type="text" 
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                placeholder="John Doe"
+                className="bg-black/40 border-border/50 h-11 focus-visible:ring-primary/50"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground flex items-center gap-2">
+                <Network className="w-4 h-4 text-primary/70" /> Email Address
+              </label>
               <Input 
                 type="email" 
                 value={email}
@@ -71,11 +96,27 @@ export default function SignUp() {
             </div>
             
             <div className="space-y-2">
-              <label className="text-sm font-medium text-foreground">Secure Password</label>
+              <label className="text-sm font-medium text-foreground flex items-center gap-2">
+                <Lock className="w-4 h-4 text-primary/70" /> Secure Password
+              </label>
               <Input 
                 type="password" 
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                required
+                placeholder="••••••••"
+                className="bg-black/40 border-border/50 h-11 focus-visible:ring-primary/50"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground flex items-center gap-2">
+                <Lock className="w-4 h-4 text-primary/70" /> Confirm Password
+              </label>
+              <Input 
+                type="password" 
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
                 required
                 placeholder="••••••••"
                 className="bg-black/40 border-border/50 h-11 focus-visible:ring-primary/50"

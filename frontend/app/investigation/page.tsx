@@ -43,6 +43,8 @@ export default function InvestigationConsole() {
   
   const [streamingText, setStreamingText] = useState("");
   const [metrics, setMetrics] = useState<any>(null);
+  
+  const saveInvestigation = useMutation(api.investigations.saveInvestigation);
 
   const onConnect = useCallback((params: any) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
 
@@ -83,6 +85,14 @@ export default function InvestigationConsole() {
         if (i > answer.length) {
           clearInterval(interval);
           setIsSearching(false);
+          
+          // Save the completed investigation to Convex DB
+          saveInvestigation({
+            query: query,
+            llmResponse: data.llm_only?.answer,
+            graphragResponse: answer,
+            metrics: runMetrics
+          }).catch(err => console.error("Failed to save to Convex DB:", err));
         }
       }, 20);
       
