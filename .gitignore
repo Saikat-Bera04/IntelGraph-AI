@@ -1,0 +1,56 @@
+# Node & Frontend (Next.js)
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/build/
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnp.*
+
+# Python & Backend (FastAPI)
+intelgraph-backend/venv/
+intelgraph-backend/env/
+intelgraph-backend/.env
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# TigerGraph GraphRAG Repo
+intelgraph-backend/graphrag/
+
+# IDE & OS Files
+.vscode/
+.idea/
+.DS_Store
+*.swp
+*.swo
+
+# Project Specific
+artifacts/
+knowledge/
+brain/
