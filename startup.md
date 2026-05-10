@@ -37,6 +37,12 @@ GEMINI_API_KEY=your_actual_gemini_api_key_here
 # Qdrant Vector DB Settings (Default local docker ports)
 QDRANT_HOST=localhost
 QDRANT_PORT=6333
+
+# TigerGraph Savanna / REST++ GraphRAG settings
+TIGERGRAPH_URL=https://your-tigergraph-host
+TIGERGRAPH_API_KEY=your_tigergraph_api_key
+GRAPH_NAME=intelgraph
+TIGERGRAPH_VERTEX_TYPES=ThreatActor,Vulnerability,Malware,IP,Sector
 ```
 
 ---
