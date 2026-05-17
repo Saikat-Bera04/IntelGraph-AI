@@ -4,6 +4,7 @@ import { Inter, JetBrains_Mono } from 'next/font/google'
 import { GeistPixelLine } from 'geist/font/pixel'
 import { Analytics } from '@vercel/analytics/next'
 import { ConvexClientProvider } from "@/components/ConvexClientProvider"
+import { ErrorBoundary } from "@/components/error-boundary"
 import './globals.css'
 
 const inter = Inter({ 
@@ -43,10 +44,12 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className={`${inter.variable} ${jetbrainsMono.variable} ${GeistPixelLine.variable} font-sans antialiased`}>
-        <ConvexClientProvider>
-          {children}
-          <Analytics />
-        </ConvexClientProvider>
+        <ErrorBoundary>
+          <ConvexClientProvider>
+            {children}
+            <Analytics />
+          </ConvexClientProvider>
+        </ErrorBoundary>
       </body>
     </html>
   )

@@ -54,29 +54,53 @@ export default function InvestigationConsole() {
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!query) return;
+    
+    // Input validation
+    const trimmedQuery = query.trim();
+    if (!trimmedQuery) {
+      setStreamingText("❌ Please enter a query. Example: 'Which threat actors are linked to Cobalt Strike?'");
+      return;
+    }
+    
+    if (trimmedQuery.length > 5000) {
+      setStreamingText("❌ Query exceeds maximum length of 5000 characters. Please shorten your query.");
+      return;
+    }
     
     setIsSearching(true);
     setStreamingText("");
     setMetrics(null);
     
     try {
+      // Fetch with timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+      
       const response = await fetch(`${apiUrl}/query`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ query }),
+        body: JSON.stringify({ query: trimmedQuery }),
+        signal: controller.signal,
       });
+      
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
-        throw new Error(`IntelGraph API returned ${response.status}`);
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.details || `IntelGraph API returned ${response.status}`);
       }
       
       const data = await response.json();
       
+      // Validate response structure
+      if (!data.graphrag?.answer) {
+        throw new Error("Invalid response format from API");
+      }
+      
       // Map the response
-      const answer = data.graphrag?.answer || "No response received.";
+      const answer = data.graphrag.answer;
       const runMetrics = {
         llm: data.llm_only?.metrics,
         rag: data.basic_rag?.metrics,
@@ -96,7 +120,7 @@ export default function InvestigationConsole() {
           
           // Save the completed investigation to Convex DB
           saveInvestigation({
-            query: query,
+            query: trimmedQuery,
             llmResponse: data.llm_only?.answer,
             graphragResponse: answer,
             metrics: runMetrics
@@ -104,9 +128,13 @@ export default function InvestigationConsole() {
         }
       }, 20);
       
-    } catch (error) {
+    } catch (error: any) {
+      const errorMsg = error?.name === 'AbortError' 
+        ? "Request timeout: The API took too long to respond. Please try again or check if the backend is running."
+        : error?.message || "Error connecting to the IntelGraph API";
+      
       console.error("Error fetching from backend:", error);
-      setStreamingText(`Error connecting to the IntelGraph API. Please ensure the backend is running at ${apiUrl}.`);
+      setStreamingText(`❌ ${errorMsg}\n\nMake sure the backend is running at ${apiUrl}`);
       setIsSearching(false);
     }
   };

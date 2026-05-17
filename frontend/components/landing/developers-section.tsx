@@ -140,11 +140,9 @@ export function DevelopersSection() {
                     {codeExamples[activeTab].code.split('\n').map((line, i) => (
                       <div key={i} className="leading-relaxed">
                         <span className="text-muted-foreground/40 select-none w-8 inline-block">{i + 1}</span>
-                        <span 
-                          dangerouslySetInnerHTML={{ 
-                            __html: highlightSyntax(line) 
-                          }} 
-                        />
+                        <span>
+                          {highlightSyntaxTokens(line)}
+                        </span>
                       </div>
                     ))}
                   </code>
@@ -186,4 +184,66 @@ function highlightSyntax(line: string): string {
     .replace(/('.*?'|".*?")/g, '<span class="text-green-400">$1</span>')
     .replace(/(\/\/.*$)/g, '<span class="text-muted-foreground/50">$1</span>')
     .replace(/(\{|\}|\(|\)|\[|\])/g, '<span class="text-muted-foreground">$1</span>');
+}
+
+// Safe token-based syntax highlighting using React components
+function highlightSyntaxTokens(line: string) {
+  // Keywords to highlight
+  const keywords = /\b(import|from|const|await|for|process|new|async|function|return|if|else|case|break|continue|default)\b/g;
+  const strings = /('.*?'|".*?")/g;
+  const comments = /(\/\/.*$)/g;
+  const brackets = /(\{|\}|\(|\)|\[|\]|:|;|,)/g;
+  
+  let parts = [{ text: line, type: 'text' }];
+  
+  // Tokenize by type (order matters - most specific first)
+  const patterns = [
+    { regex: comments, type: 'comment' },
+    { regex: strings, type: 'string' },
+    { regex: keywords, type: 'keyword' },
+    { regex: brackets, type: 'bracket' },
+  ];
+  
+  for (const pattern of patterns) {
+    const newParts = [];
+    for (const part of parts) {
+      if (part.type !== 'text') {
+        newParts.push(part);
+        continue;
+      }
+      
+      let lastIndex = 0;
+      let match;
+      pattern.regex.lastIndex = 0;
+      
+      while ((match = pattern.regex.exec(part.text)) !== null) {
+        if (match.index > lastIndex) {
+          newParts.push({ text: part.text.slice(lastIndex, match.index), type: 'text' });
+        }
+        newParts.push({ text: match[0], type: pattern.type });
+        lastIndex = pattern.regex.lastIndex;
+      }
+      
+      if (lastIndex < part.text.length) {
+        newParts.push({ text: part.text.slice(lastIndex), type: 'text' });
+      } else if (lastIndex === 0) {
+        newParts.push(part);
+      }
+    }
+    parts = newParts;
+  }
+  
+  const classMap = {
+    keyword: 'text-primary',
+    string: 'text-green-400',
+    comment: 'text-muted-foreground/50',
+    bracket: 'text-muted-foreground',
+    text: 'text-muted-foreground',
+  };
+  
+  return parts.map((part, i) => (
+    <span key={i} className={classMap[part.type as keyof typeof classMap]}>
+      {part.text}
+    </span>
+  ));
 }

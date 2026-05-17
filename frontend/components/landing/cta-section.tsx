@@ -74,8 +74,8 @@ export function CtaSection() {
               </div>
               
               {/* Animated ASCII Sphere */}
-              <div className="hidden lg:block opacity-40">
-                <AsciiSphere className="w-[600px] h-[560px]" />
+              <div className="hidden lg:block opacity-40 w-[600px] h-[560px]">
+                <AsciiSphere />
               </div>
             </div>
           </div>

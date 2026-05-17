@@ -1,8 +1,17 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, validator
 from typing import Dict, Any, Optional, List
 
 class QueryRequest(BaseModel):
-    query: str
+    query: str = Field(..., min_length=1, max_length=5000)
+    
+    @validator('query')
+    def validate_query(cls, v):
+        """Validate query string."""
+        if not v or not v.strip():
+            raise ValueError("Query cannot be empty or whitespace-only")
+        if len(v.strip()) > 5000:
+            raise ValueError("Query exceeds maximum length of 5000 characters")
+        return v.strip()
 
 class PipelineMetrics(BaseModel):
     tokens_used: int
