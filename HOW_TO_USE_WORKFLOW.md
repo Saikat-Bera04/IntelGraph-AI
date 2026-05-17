@@ -4,6 +4,80 @@ A step-by-step guide to start the application, verify everything works, and test
 
 ---
 
+## 🎬 Demo Video Script
+
+Use this as a read-aloud script for a 2 to 4 minute demo video.
+
+### Suggested pace
+
+- Speak clearly and keep each section under 30 to 40 seconds
+- Use one strong query so the whole demo feels connected
+- Keep the mouse movement calm and deliberate
+
+### Full voiceover script
+
+#### Opening
+
+> “IntelGraph AI is a cybersecurity investigation platform that combines graph reasoning, retrieval, and benchmarking in one workflow. In a single interface, it helps analysts move from a question to evidence-backed answers.”
+
+**On screen:** Open `http://localhost:3000` and show the landing page.
+
+#### Transition to the dashboard
+
+> “From here, the dashboard gives me direct access to the three main workspaces: investigation, benchmarking, and the dataset explorer.”
+
+**On screen:** Open `http://localhost:3000/dashboard` and pause on the three cards.
+
+#### Investigation console
+
+> “The main workflow starts in the Investigation Console. I’ll ask a threat-intel question and let the platform run all three pipelines against it.”
+
+Type this query:
+
+`Which threat actors are linked to Cobalt Strike?`
+
+Then click **Analyze**.
+
+> “The backend runs an LLM-only pass, a vector RAG pass, and a GraphRAG pass. The response streams in while the attack graph updates with related entities and relationships.”
+
+**On screen:** Show the streaming answer, the graph on the left, and the tabs on the right.
+
+> “What matters here is not just the answer, but the evidence chain and the metrics. GraphRAG returns a more focused context, which means fewer tokens, lower cost, and stronger accuracy for multi-hop security questions.”
+
+**On screen:** Switch through AI Synthesis, Evidence Chain, and Metrics.
+
+#### Benchmark page
+
+> “To make the difference visible, I can open the Benchmark page. This compares LLM-only, Basic RAG, and GraphRAG side by side.”
+
+**On screen:** Open `http://localhost:3000/benchmark`.
+
+> “Here you can see the core value: GraphRAG is designed to improve accuracy while reducing token usage and latency. That is the reason the graph-based approach is useful for investigation workflows.”
+
+**On screen:** Point to the accuracy chart, token chart, and KPI cards.
+
+#### Dataset explorer
+
+> “Finally, the Dataset Explorer shows the knowledge graph behind the system. It includes threat actors, CVEs, malware, and the relationships that power the investigation experience.”
+
+**On screen:** Open `http://localhost:3000/dataset` and scroll through the entity cards.
+
+#### Closing
+
+> “So the full story is simple: ask a question, inspect the graph, compare the pipelines, and use the evidence to support the answer. That is IntelGraph AI.”
+
+**On screen:** Return briefly to the Investigation Console or end on the dashboard.
+
+### Simple recording tips
+
+- Use one browser window and hide extra tabs
+- Record at 1080p if possible
+- Zoom the browser slightly if the text looks small
+- If the backend is already running, do not waste time showing setup steps in the video
+- If you want a shorter demo, keep only the landing page, investigation console, and benchmark page
+
+---
+
 ## 🎯 Quick Start (5 Minutes)
 
 ### **Step 1: Start the Backend** (Terminal 1)

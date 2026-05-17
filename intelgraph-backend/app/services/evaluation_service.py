@@ -13,9 +13,15 @@ class LLMJudgeResult(BaseModel):
 class EvaluationService:
     def __init__(self):
         self.bert_score = None
+
+    def _get_bert_score(self):
+        if self.bert_score is not None:
+            return self.bert_score
+
         try:
             from bert_score import BERTScorer
-            # Use a smaller model for hackathon speed
+
+            # Load lazily so the API can start even when the transformer model is unavailable.
             self.bert_score = BERTScorer(lang="en", model_type="distilbert-base-uncased")
             logger.info("BERTScore loaded successfully.")
         except ImportError:
@@ -23,16 +29,19 @@ class EvaluationService:
         except Exception as e:
             logger.error(f"Error loading BERTScore: {e}")
 
+        return self.bert_score
+
     def evaluate_bertscore(self, reference: str, candidate: str) -> dict:
         """
         Calculates the BERTScore comparing the generated answer to a reference.
         Returns precision, recall, and f1 score.
         """
-        if not self.bert_score:
+        bert_score = self._get_bert_score()
+        if not bert_score:
             return {"precision": 0.0, "recall": 0.0, "f1": 0.0, "error": "bert-score not available"}
         
         try:
-            P, R, F1 = self.bert_score.score([candidate], [reference])
+            P, R, F1 = bert_score.score([candidate], [reference])
             return {
                 "precision": P.item(),
                 "recall": R.item(),
