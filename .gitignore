@@ -80,7 +80,6 @@ site/
 # ============================================================================
 # TigerGraph GraphRAG & Related
 # ============================================================================
-intelgraph-backend/graphrag/
 intelgraph-backend/graphrag-output/
 intelgraph-backend/rag-cache/
 
